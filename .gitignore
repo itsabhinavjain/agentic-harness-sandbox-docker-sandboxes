@@ -1,7 +1,11 @@
-.env*
+.env
 .sbx/
-agent_machine/working_directory/
-agent_machine/home_mounts/
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
 
 
 
