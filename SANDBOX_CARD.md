@@ -1,0 +1,13 @@
+## What to specify 
+- What all folders are mounted 
+- What all home folders and files are mounted to the host machine so that they are persistent 
+- What all ports are open 
+- What all websites are accessible 
+- Environment 
+  - What clis are installed (Standard and custom)
+  - What packages are installed 
+  - What all environment variables are set
+- Agent 
+  - What agent are we using 
+  - What all skills are installed 
+  - What all plugins are installed 

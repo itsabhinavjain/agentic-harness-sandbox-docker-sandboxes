@@ -28,52 +28,99 @@
       - create_home_symlinks.sh
       - remove_home_symlinks.sh
 ```
+## Conventions
+- Agent machine folder (main folder) should have the following :  
+  - `home_mounts/` `scripts/` `working_directory/` folders : The names of these folders should not be changed
+- Environment variables within the sandbox 
+  - `SANDBOX_SCRIPTS_FOLDER_PATH`
+  - `SANDBOX_HOME_MOUNT_FOLDER_PATH`
+  - `SANDBOX_WORKING_DIRECTORY_FOLDER_PATH`
+- Note that the directories inside the sandbox are mounted using the absolute paths on the host machine, therefore one should be careful while changing the directory of the repo on the host machine. 
 
 ## Scripts 
 - All scripts on the host machine runs from the project root 
-- All scripts inside the sandbox runs from the home directory or the user (agent)
+- All scripts inside the sandbox runs from the home directory `/home/agent`
 
 ### 01_sandbox_init.sh 
-./admin_scripts/01_sandbox_init.sh claude abhinav-test /Users/abhinavjain/Documents/03-Sandboxes/docker-sandboxes-microvms/test/agent_machine
+#### Sample usage
+`./admin_scripts/01_sandbox_init.sh claude abhinav-test ./agent_machine`
 Parameters - 
     - Kind of sandbox
     - The name of the sandbox 
-    - The main folder (This folder is expected to have `home_mounts/` `scripts/` `working_directory/` folders)
+    - The main folder 
 
+#### What the script does
 Validate the inputs 
-
 Check if sbx etc is installed 
-
 Check if the environment variables are set 
-
-
 Create the sandbox 
-sbx create --name abhinav-test claude ./agent_machine/workspace ./agent_machine/scripts ./agent_machine/home_mounts 
+`sbx create --name abhinav-test claude ./agent_machine/working_directory ./agent_machine/scripts ./agent_machine/home_mounts `
 
-Setup the environment variables in sandbox 
-sbx exec -d abhinav-test bash -c "echo 'export BRAVE_API_KEY=your_key' >> /etc/sandbox-persistent.sh"
-sbx exec -it abhinav-test bash
+Setup the environment variables in sandbox (Make sure that the environment variables have absolute paths)
+```
+sbx exec -d abhinav-test bash -c "echo 'export SANDBOX_SCRIPTS_FOLDER_PATH=your_key' >> /etc/sandbox-persistent.sh"
+sbx exec -d abhinav-test bash -c "echo 'export SANDBOX_HOME_MOUNT_FOLDER_PATH=your_key' >> /etc/sandbox-persistent.sh"
+sbx exec -d abhinav-test bash -c "echo 'export SANDBOX_WORKING_DIRECTORY_FOLDER_PATH=your_key' >> /etc/sandbox-persistent.sh"
+```
 
-Run the create_home_symlinks.sh script (For Claude)
+
+Run the create_home_symlinks.sh script for ~/.claude
 
 ### 02_sandbox_shell.sh 
-./admin_scripts/02_sandbox_shell.sh abhinav-test
+#### Sample usage
+`./admin_scripts/02_sandbox_shell.sh abhinav-test`
 sbx exec -it abhinav-test bash
 
-### 03_sandbox_run.sh  
+#### What the script does
+Validates if the sandbox with that name exists
+Validates if the variables environment variables are set
+Validates if the mount is available at the various locations mentioned in the environment variables
+Executes bash  
+
+### 03_sandbox_run.sh 
+#### Sample usage 
 ./admin_scripts/03_sandbox_run.sh abhinav-test
+
+#### What the script does
+Validates if the sandbox with that name exists
+Validates if the variables environment variables are set
+Validates if the mount is available at the various locations mentioned in the environment variables
 sbx run abhinav-test
 
 ### 04_sandbox_stop.sh
+#### Sample usage
 ./admin_scripts/04_sandbox_stop.sh abhinav-test
+
+#### What the script does
+Validates if the sandbox with that name exists
+Validates if the variables environment variables are set
+Validates if the mount is available at the various locations mentioned in the environment variables
 sbx stop abhinav-test
 
 ### 05_sandbox_remove.sh
+#### Sample usage
 ./admin_scripts/05_sandbox_remove.sh abhinav-test
+
+#### What the script does
+Validates if the sandbox with that name exists
+Validates if the variables environment variables are set
+Validates if the mount is available at the various locations mentioned in the environment variables
 sbx rm abhinav-test 
 
 ### create_home_symlinks.sh
+#### Sample usage
+Called from within the sandbox 
+
+#### What the script does
+Looks at the folder in the home directory within the sandbox. If it finds the folder, it then creates the actual folders in home_mount directory and create a symbolic link in the home directory. This will ensure that the folder is persistent between runs and also when the sandbox is removed. 
+
 ### remove_home_symlinks.sh
+#### Sample usage
+Called from within the sandbox 
+
+#### What the script does
+Looks at the folder in home_mount directly and move it back to the /home/agent directory. The folder will not persist in that case. 
+
 
 ## USAGE and TROUBLESHOOTING 
 - Sandbox lifecycle 
@@ -94,12 +141,11 @@ sbx rm abhinav-test
   - Sudo work inside the sandbox 
     - `sbx exec -u root my-sandbox apt-get update`
 - Templates 
-  - claude, codex, copilot, gemini, kiro, opencode
-  - shell
+  - `claude`, `codex`, `copilot`, `gemini`, `kiro`, `opencode`
+  - `shell`
   - Creating a custom template : https://docs.docker.com/ai/sandboxes/agents/custom-environments/
-
-## Check later 
-- Might want to be able to add networking and sshd on the sandbox 
+- Common `home_mounts/` folders
+  - `.claude` : To get user level installations of skills and plugins etc 
 
 ## Notes 
 https://docs.docker.com/ai/sandboxes/
@@ -124,11 +170,14 @@ sbx exec -d abhinav-test bash -c "echo 'export BRAVE_API_KEY=your_key' >> /etc/s
 sbx exec -it abhinav-test bash
 ```
 
-Clarification needed :- 
-
-1) Test the symbolic linking script 
-2) Test the symbolic unlinking script 
-3) Create the script admin_scripts scripts 
+## Things to do 
+1) Write symbolic linking scripts
+   1) Test the symbolic linking script 
+   2) Test the symbolic unlinking script 
+2) Create the script admin_scripts scripts 
 
 https://claude.ai/chat/ab7bdc5d-c0aa-426a-8855-236eb6baf64e
 https://docs.docker.com/ai/sandboxes/agents/claude-code/
+
+## Check later 
+- Might want to be able to add networking (Tailscale or a subrouter) and sshd on the sandbox 
