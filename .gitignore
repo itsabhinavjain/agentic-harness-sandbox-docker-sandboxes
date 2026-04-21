@@ -1,6 +1,6 @@
 .env*
 .sbx/
-agent_machine/workspace/
+agent_machine/working_directory/
 agent_machine/home_mounts/
 
 
