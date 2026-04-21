@@ -1,13 +1,14 @@
 ## USAGE and TROUBLESHOOTING 
 ### Sandbox lifecycle 
 - Create .env file 
-- Specify the name of the sandbox 
-- Specify the name of the agent
-- Specify the agent machine directory (Should contain `working_directory`, `scripts`, `home_mounts`)
-- Specify the directories that should be mounted to `home_mounts` 
-- Specify the ports that should be exposed
+  - Specify the name of the sandbox 
+  - Specify the name of the agent
+  - Specify the agent machine directory (Should contain `working_directory`, `scripts`, `home_mounts`)
+  - Specify the directories that should be mounted to `home_mounts` 
+  - Specify the ports that should be exposed
 - Other API Keys 
 - `./admin_scripts/01_sandbox_init.sh [SANDBOX_NAME] [AGENT] [AGENT_MACHINE_DIR]` : Create a sandbox 
+  - Typically you might want to enter the shell and run some scripts for initial configuration 
 - `./admin_scripts/02_sandbox_shell.sh [SANDBOX_NAME]` : Open an interative shell
 - `./admin_scripts/03_sandbox_run.sh [SANDBOX_NAME]` : Attach to an agent session 
 - `./admin_scripts/04_sandbox_start.sh [SANDBOX_NAME]` : Start a previously-stopped sandbox without attaching. Useful for CI, or when you want ports up before connecting.
