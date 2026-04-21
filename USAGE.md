@@ -53,3 +53,5 @@
 | `.npmrc` | npm auth tokens |
 
 Pick per project. The default in `.env` is just `.claude`.
+
+ 
