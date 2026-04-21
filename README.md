@@ -246,41 +246,11 @@ remove_home_symlinks.sh [DIR...]
 | `LINK` missing | Warn and skip |
 
 
-## USAGE and TROUBLESHOOTING 
-- Sandbox lifecycle 
-- Others
-  - Creating home_mount symbolic links (agent home to home_mount) 
-  - Removing home_mount symbolic links (home_mount to agent home)
-  - Adding environment variables 
-    - `sbx exec -d <sandbox-name> bash -c "echo 'export BRAVE_API_KEY=your_key' >> /etc/sandbox-persistent.sh"`
-  - Accessing services on the host machine 
-    - `sbx policy allow network localhost:11434`
-    - `curl http://host.docker.internal:11434` (From inside the sandbox)
-  - Accessing websites that are blocked by default 
-    - `sbx policy ls`
-    - `sbx policy allow network <host>`
-    - `sbx policy deny network <host>`
-    - `sbx policy reset`
-  - Exposing services to the outside world - host machine, private network , internet 
-  - Sudo work inside the sandbox 
-    - `sbx exec -u root my-sandbox apt-get update`
-- Templates 
-  - `claude`, `codex`, `copilot`, `gemini`, `kiro`, `opencode`
-  - `shell`
-  - Creating a custom template : https://docs.docker.com/ai/sandboxes/agents/custom-environments/
-
 ### Common `home_mounts/` targets
+Refer to [USAGE.md](USAGE.md)
 
-| Directory | Purpose |
-|---|---|
-| `.claude` | Claude Code user-level skills, plugins, agents, auth |
-| `.config/claude` | Claude Code config on XDG-compliant setups |
-| `.gitconfig` | User's git identity and aliases |
-| `.ssh` | SSH keys for git operations |
-| `.aws` | AWS CLI credentials and config |
-| `.npmrc` | npm auth tokens |
-
-Pick per project. The default in `.env` is just `.claude`.
+## Usage 
+Refer to [USAGE.md](USAGE.md)
 
 ## Notes 
 https://docs.docker.com/ai/sandboxes/
@@ -295,7 +265,7 @@ https://docs.docker.com/ai/sandboxes/
     - Published ports are not peristent. Re-publish with `sbx ports` after each start.
   - Inside sandbox 
     - While executing :- 
-      - Agent enters here : `/home/agent/workspace` (Defined in the base template - provided as default)
+      - Agent enters here : `/home/agent/workspace` (Defined in the base template by the docker team - provided as default)
     - While running :- 
       - Claude starts here (mounted) : `/Users/abhinavjain/Documents/03-Sandboxes/docker-sandboxes-microvms/test/agent_machine/working_directory`
       - Additional mounts : `/Users/abhinavjain/Documents/03-Sandboxes/docker-sandboxes-microvms/test/agent_machine/scripts`
@@ -309,19 +279,14 @@ sbx exec -d abhinav-test bash -c "echo 'export BRAVE_API_KEY=your_key' >> /etc/s
 sbx exec -it abhinav-test bash
 ```
 
-## Things to do 
-1) Write symbolic linking scripts
-   1) Test the symbolic linking script 
-   2) Test the symbolic unlinking script 
-2) Create the script admin_scripts scripts 
-
-https://claude.ai/chat/ab7bdc5d-c0aa-426a-8855-236eb6baf64e
-https://docs.docker.com/ai/sandboxes/agents/claude-code/
-
 ## Future work
-- Networking: Tailscale or subrouter integration for agent-to-agent or agent-to-private-service connectivity.
-- `sshd` inside sandboxes for richer remote editing workflows.
-- Custom templates with `home_mounts` symlinks pre-configured in the base image.
+- Testing
+  - Testing of ports 
+  - Additional files and folders in the home directory of the sandbox 
+- Enhancements
+  - Networking: Tailscale or subrouter integration for agent-to-agent or agent-to-private-service connectivity.
+  - `sshd` inside sandboxes for richer remote editing workflows.
+  - Custom templates with `home_mounts` symlinks pre-configured in the base image.
 
 ## References
 
