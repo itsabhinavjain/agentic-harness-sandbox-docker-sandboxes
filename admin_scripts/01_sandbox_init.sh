@@ -77,7 +77,7 @@ log_info "Injecting sandbox env vars into /etc/sandbox-persistent.sh"
 SANDBOX_HOME_MOUNT_DIRS_VAL="${SANDBOX_HOME_MOUNT_DIRS:-}"
 
 # 1) Path exports: unquoted heredoc so host-side $ABS_* expand.
-sbx exec -d "$NAME" bash -c "cat >> /etc/sandbox-persistent.sh <<ENVEOF
+sbx exec "$NAME" bash -c "cat >> /etc/sandbox-persistent.sh <<ENVEOF
 export SANDBOX_WORKING_DIRECTORY_FOLDER_PATH=\"$ABS_WD\"
 export SANDBOX_SCRIPTS_FOLDER_PATH=\"$ABS_SCRIPTS\"
 export SANDBOX_HOME_MOUNT_FOLDER_PATH=\"$ABS_HOME_MOUNTS\"
@@ -86,7 +86,7 @@ ENVEOF" || die "Failed to inject sandbox env vars"
 
 # 2) Terminal fixups: single-quoted heredoc so nothing on host or sandbox
 #    expands — the body is written to the file verbatim.
-sbx exec -d "$NAME" bash -c "cat >> /etc/sandbox-persistent.sh <<'ENVEOF'
+sbx exec "$NAME" bash -c "cat >> /etc/sandbox-persistent.sh <<'ENVEOF'
 : \"\${TERM:=xterm-256color}\"
 export TERM
 # Re-probe terminal size each prompt (sbx exec pty may miss SIGWINCH).
@@ -149,7 +149,7 @@ if [[ -f "$ENV_FILE" ]]; then
 
   if [[ -n "$EXTRA_LINES" ]]; then
     log_info "Injecting additional env vars from .env"
-    sbx exec -d "$NAME" bash -c "cat >> /etc/sandbox-persistent.sh <<ENVEOF
+    sbx exec "$NAME" bash -c "cat >> /etc/sandbox-persistent.sh <<ENVEOF
 $EXTRA_LINES
 ENVEOF" || die "Failed to inject additional env vars"
   fi

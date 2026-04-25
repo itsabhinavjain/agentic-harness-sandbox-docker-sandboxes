@@ -264,9 +264,10 @@ https://docs.docker.com/ai/sandboxes/
     - Services inside the sandbox must bind to `0.0.0.0` to be reachables via `sbx ports`
     - Published ports are not peristent. Re-publish with `sbx ports` after each start.
   - Inside sandbox 
-    - While executing :- 
-      - Agent enters here : `/home/agent/workspace` (Defined in the base template by the docker team - provided as default)
-    - While running :- 
+    - While `executing` :- 
+      - Agent enters here after `exec` : `/home/agent/workspace` (Defined in the base template by the docker team - provided as default)
+      - Please note that in case you are adding skills and plugins etc, you should add them to the `SANDBOX_WORKING_DIRECTORY_FOLDER_PATH` folder 
+    - While `running` :- 
       - Claude starts here (mounted) : `/Users/abhinavjain/Documents/03-Sandboxes/docker-sandboxes-microvms/test/agent_machine/working_directory`
       - Additional mounts : `/Users/abhinavjain/Documents/03-Sandboxes/docker-sandboxes-microvms/test/agent_machine/scripts`
       - Additional mounts : `/Users/abhinavjain/Documents/03-Sandboxes/docker-sandboxes-microvms/test/agent_machine/home_mounts`

@@ -22,6 +22,7 @@
   - Removing home_mount symbolic links (home_mount to agent home) - within the sandbox 
     - `SANDBOX_SCRIPTS_FOLDER_PATH/remove_home_symlinks.sh [DIR...]`
   - In case the scripts dont run, make sure that you have `chmod +x` the scripts in the sandbox or the host machine 
+  - Adding plugins and skills : Note that `/home/agents/workspace` is the default working directory when we `exec` into the container. That is not the project folder. Please make sure that you `cd $SANDBOX_WORKING_DIRECTORY_FOLDER_PATH` before adding plugins and skills. This will ensure that we are adding the skills and plugins etc in the project folder.
 - Host scripts
   - Adding environment variables (Persists)
     - `sbx exec -d [SANDBOX_NAME] bash -c "echo 'export BRAVE_API_KEY=your_key' >> /etc/sandbox-persistent.sh"`
@@ -36,6 +37,7 @@
   - Exposing services to the outside world - host machine, private network, internet - Port doesn't persist 
   - Sudo work inside the sandbox 
     - `sbx exec -u root my-sandbox apt-get update`
+
 
 ### Templates 
 - `claude`, `codex`, `copilot`, `gemini`, `kiro`, `opencode`
