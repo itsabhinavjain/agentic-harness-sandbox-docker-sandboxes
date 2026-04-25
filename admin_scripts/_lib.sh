@@ -216,3 +216,11 @@ $output"
     log_info "Reminder: services inside the sandbox must bind to 0.0.0.0 to be reachable through published ports"
   fi
 }
+
+ensure_dir() {
+  local dir="$1"
+  if [[ ! -d "$dir" ]]; then
+    log_info "Directory not found: $dir — creating it"
+    mkdir -p "$dir" || die "Failed to create directory: $dir"
+  fi
+}

@@ -50,9 +50,9 @@ ABS_WD="$AM_DIR/working_directory"
 ABS_SCRIPTS="$AM_DIR/scripts"
 ABS_HOME_MOUNTS="$AM_DIR/home_mounts"
 
-[[ -d "$ABS_WD"           ]] || die "Missing required subdirectory: $ABS_WD"
-[[ -d "$ABS_SCRIPTS"      ]] || die "Missing required subdirectory: $ABS_SCRIPTS"
-[[ -d "$ABS_HOME_MOUNTS"  ]] || die "Missing required subdirectory: $ABS_HOME_MOUNTS"
+ensure_dir "$ABS_WD"
+ensure_dir "$ABS_SCRIPTS"
+ensure_dir "$ABS_HOME_MOUNTS"
 
 validate_sbx_installed
 
@@ -75,12 +75,33 @@ sbx create --name "$NAME" "$AGENT" "$ABS_WD" "$ABS_SCRIPTS" "$ABS_HOME_MOUNTS" |
 # our variables, so we use double-escaped interior quoting.
 log_info "Injecting sandbox env vars into /etc/sandbox-persistent.sh"
 SANDBOX_HOME_MOUNT_DIRS_VAL="${SANDBOX_HOME_MOUNT_DIRS:-}"
+
+# 1) Path exports: unquoted heredoc so host-side $ABS_* expand.
 sbx exec -d "$NAME" bash -c "cat >> /etc/sandbox-persistent.sh <<ENVEOF
 export SANDBOX_WORKING_DIRECTORY_FOLDER_PATH=\"$ABS_WD\"
 export SANDBOX_SCRIPTS_FOLDER_PATH=\"$ABS_SCRIPTS\"
 export SANDBOX_HOME_MOUNT_FOLDER_PATH=\"$ABS_HOME_MOUNTS\"
 export SANDBOX_HOME_MOUNT_DIRS=\"$SANDBOX_HOME_MOUNT_DIRS_VAL\"
 ENVEOF" || die "Failed to inject sandbox env vars"
+
+# 2) Terminal fixups: single-quoted heredoc so nothing on host or sandbox
+#    expands — the body is written to the file verbatim.
+sbx exec -d "$NAME" bash -c "cat >> /etc/sandbox-persistent.sh <<'ENVEOF'
+: \"\${TERM:=xterm-256color}\"
+export TERM
+# Re-probe terminal size each prompt (sbx exec pty may miss SIGWINCH).
+# Moves cursor to (9999,9999), terminal clamps to its real max, then queries
+# cursor position and pushes that size back into stty.
+if [[ \$- == *i* ]] && [[ -t 0 ]]; then
+  __sbx_fix_winsize() {
+    local IFS='[;' rows cols _
+    read -t 0.2 -rsdR -p \$'\\e[s\\e[9999;9999H\\e[6n\\e[u' _ rows cols 2>/dev/null || return 0
+    [[ \$cols =~ ^[0-9]+\$ ]] && [[ \$rows =~ ^[0-9]+\$ ]] && stty cols \"\$cols\" rows \"\$rows\" 2>/dev/null
+  }
+  PROMPT_COMMAND=\"__sbx_fix_winsize\${PROMPT_COMMAND:+; \$PROMPT_COMMAND}\"
+  shopt -s checkwinsize 2>/dev/null || true
+fi
+ENVEOF" || die "Failed to inject terminal fixups"
 
 # Inject any additional env vars from .env that are not in the reserved set.
 RESERVED_KEYS=(

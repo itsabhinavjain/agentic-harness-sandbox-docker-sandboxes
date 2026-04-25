@@ -16,4 +16,4 @@ validate_sandbox_exists "$NAME"
 validate_sandbox_env_vars "$NAME"
 ensure_ports_published "$NAME"
 
-exec sbx exec -it "$NAME" bash
+exec sbx exec -it -e TERM="${TERM:-xterm-256color}" "$NAME" bash
