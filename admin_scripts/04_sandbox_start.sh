@@ -25,4 +25,6 @@ sbx start "$NAME" || die "sbx start failed for sandbox '$NAME'"
 validate_sandbox_env_vars "$NAME"
 ensure_ports_published "$NAME"
 
-log_info "Sandbox '$NAME' started. Use ./admin_scripts/02_sandbox_shell.sh or 03_sandbox_run.sh to connect."
+log_info "Sandbox '$NAME' started. "
+log_info " Run: ./admin_scripts/02_sandbox_shell.sh $NAME"
+log_info " Run: ./admin_scripts/03_sandbox_run.sh $NAME"

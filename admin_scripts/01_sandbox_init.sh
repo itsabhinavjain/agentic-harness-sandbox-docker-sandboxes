@@ -63,15 +63,18 @@ fi
 
 log_info "Creating sandbox '$NAME' with agent '$AGENT'"
 log_info "  working_directory: $ABS_WD"
-log_info "  scripts:           $ABS_SCRIPTS"
-log_info "  home_mounts:       $ABS_HOME_MOUNTS"
+log_info "  scripts          : $ABS_SCRIPTS"
+log_info "  home_mounts      : $ABS_HOME_MOUNTS"
 
 sbx create --name "$NAME" "$AGENT" "$ABS_WD" "$ABS_SCRIPTS" "$ABS_HOME_MOUNTS" || \
   die "sbx create failed for sandbox '$NAME'"
 
+log_info "Sandbox '$NAME' created."
+log_info "Configuring sandbox '$NAME' ..."
+
 # Inject the four standard env vars into /etc/sandbox-persistent.sh.
 # Single-quoted heredoc delimiter 'ENVEOF' disables shell expansion inside the
-# heredoc body on the sandbox side, but we still want host-side expansion of
+# heredoc body on the sandbox side, but we still want host-s expansion of
 # our variables, so we use double-escaped interior quoting.
 log_info "Injecting sandbox env vars into /etc/sandbox-persistent.sh"
 SANDBOX_HOME_MOUNT_DIRS_VAL="${SANDBOX_HOME_MOUNT_DIRS:-}"
@@ -160,7 +163,12 @@ log_info "Creating home directory symlinks inside sandbox"
 sbx exec "$NAME" bash -lc "$ABS_SCRIPTS/create_home_symlinks.sh" || \
   die "create_home_symlinks.sh failed inside sandbox"
 
-log_info "Sandbox '$NAME' ready. Run: ./admin_scripts/03_sandbox_run.sh $NAME"
+
+log_info "Sandbox '$NAME' configured."
+
+log_info "Sandbox '$NAME' created and configured."
+log_info " Run: ./admin_scripts/02_sandbox_shell.sh $NAME"
+log_info " Run: ./admin_scripts/03_sandbox_run.sh $NAME"
 
 # If Probe 1 shows /etc/sandbox-persistent.sh is NOT auto-sourced by the
 # template you are using, uncomment the hook below:
