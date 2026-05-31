@@ -1,0 +1,9 @@
+{
+  "bypassPermissionsModeAccepted": true,
+  "hasCompletedOnboarding": true,
+  "projects": {
+      "/": {
+      "hasTrustDialogAccepted": true
+    }
+  }
+}
