@@ -281,6 +281,7 @@ sbx exec -it abhinav-test bash
 ```
 
 ## Future work
+```
 - Testing
   - Testing of ports 
   - Additional files and folders in the home directory of the sandbox 
@@ -288,6 +289,8 @@ sbx exec -it abhinav-test bash
   - Networking: Tailscale or subrouter integration for agent-to-agent or agent-to-private-service connectivity.
   - `sshd` inside sandboxes for richer remote editing workflows.
   - Custom templates with `home_mounts` symlinks pre-configured in the base image.
+  - Maybe make a cli tool instead of having to download this repo (Feedback)
+```
 
 ## References
 
